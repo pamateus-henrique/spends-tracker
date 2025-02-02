@@ -30,7 +30,7 @@ const ReceiptUpload: React.FC = () => {
       try {
         json = JSON.parse(text);
       } catch (e) {
-        throw new Error("Invalid JSON file format");
+        throw new Error("Invalid JSON file format" + e);
       }
 
       // Add validation for required fields

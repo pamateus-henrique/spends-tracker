@@ -1,4 +1,5 @@
-/* eslint-disable */
+/* 
+eslint-disable */
 // src/app/api/receipts/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
@@ -169,17 +170,20 @@ export async function GET(request: Request) {
 
     const stats = {
       totalSpent: receipts.reduce(
-        (sum, receipt) => sum + receipt.totalValue,
+        (sum: number, receipt: Receipt) => sum + receipt.totalValue,
         0
       ),
       receiptCount: receipts.length,
-      categoryTotals: receipts.reduce((acc, receipt) => {
-        receipt.items.forEach((item) => {
-          const category = item.category.name;
-          acc[category] = (acc[category] || 0) + item.totalPrice;
-        });
-        return acc;
-      }, {} as Record<string, number>),
+      categoryTotals: receipts.reduce(
+        (acc: Record<string, number>, receipt: Receipt) => {
+          receipt.items.forEach((item) => {
+            const category = item.category.name;
+            acc[category] = (acc[category] || 0) + item.totalPrice;
+          });
+          return acc;
+        },
+        {} as Record<string, number>
+      ),
     };
 
     return NextResponse.json({

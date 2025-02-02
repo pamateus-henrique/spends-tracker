@@ -5,7 +5,13 @@ import type { RawReceipt, Receipt } from "@/types/receipts";
 
 interface ApiResponse {
   success: boolean;
-  data?: Receipt;
+  data?: Receipt | Receipt[]; // Allow single Receipt or array of Receipts
+  receipts?: Receipt[]; // For GET requests
+  stats?: {
+    totalSpent: number;
+    receiptCount: number;
+    categoryTotals: Record<string, number>;
+  };
   error?: string;
   details?: unknown;
 }
@@ -41,7 +47,17 @@ export async function POST(request: Request) {
     );
 
     const receipt = await prisma.$transaction(
-      async (tx) => {
+      async (
+        tx: Omit<
+          typeof prisma,
+          | "$connect"
+          | "$disconnect"
+          | "$on"
+          | "$transaction"
+          | "$use"
+          | "$extends"
+        >
+      ) => {
         const categoryPromises = json.items.map(async (item) => {
           return await tx.category.upsert({
             where: { name: item.category },
